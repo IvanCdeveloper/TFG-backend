@@ -17,10 +17,10 @@ public class UserEntityServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         //Extrae el usuario de la BD
-        return this.userEntityRepository.findByUsername(username).orElseThrow(
-                ()-> new UsernameNotFoundException(username+" no encontrado")
+        return this.userEntityRepository.findByEmail(email).orElseThrow(
+                ()-> new UsernameNotFoundException(email+" no encontrado")
         );
 
     }

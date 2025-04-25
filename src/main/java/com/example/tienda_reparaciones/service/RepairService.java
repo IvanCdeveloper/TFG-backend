@@ -7,6 +7,8 @@ import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.repository.RepairRepository;
 import com.example.tienda_reparaciones.repository.UserEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -23,6 +25,7 @@ public class RepairService {
 
     @Autowired
     private UserEntityRepository userEntityRepository;
+
 
     public Repair createRepair(Long userId, String marca, String modelo, List<String> piezas, Duration duracion) {
         // Validar cliente y mesa
@@ -42,6 +45,12 @@ public class RepairService {
 
         // Guardar repair en la base de datos
         return repairRepository.save(repair);
+    }
+
+
+    public Page<Repair> findAllPageable(Pageable pageable){
+
+        return repairRepository.findAll(pageable);
     }
 
 

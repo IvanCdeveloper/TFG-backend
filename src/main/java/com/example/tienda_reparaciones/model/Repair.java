@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 @Data
 @NoArgsConstructor
-
 @AllArgsConstructor
 @Entity
 public class Repair {

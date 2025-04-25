@@ -61,6 +61,6 @@ public class JwtTokenProvider {
                 .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build();
         Claims claims = parser.parseClaimsJws(token).getBody();
-        return claims.get("username").toString();
+        return claims.get("email").toString();
     }
 }
