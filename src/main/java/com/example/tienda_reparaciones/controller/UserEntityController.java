@@ -1,34 +1,37 @@
 package com.example.tienda_reparaciones.controller;
 
 import com.example.tienda_reparaciones.model.UserEntity;
-import com.example.tienda_reparaciones.repository.UserEntityRepository;
 import com.example.tienda_reparaciones.service.UserEntityService;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 public class UserEntityController {
 
-    @Autowired
-    private UserEntityRepository userEntityRepository;
-
-    @Autowired
-    private UserEntityService userEntityService;
 
 
-    @Autowired
-    private PaginationLinksUtils paginationLinksUtils;
+    private final UserEntityService userEntityService;
+
+
+    private final PaginationLinksUtils paginationLinksUtils;
+
+    public UserEntityController(UserEntityService userEntityService, PaginationLinksUtils paginationLinksUtils) {
+        this.userEntityService = userEntityService;
+        this.paginationLinksUtils = paginationLinksUtils;
+    }
 
     @GetMapping("/usuarios")
-    public ResponseEntity<Page<UserEntity>> getUsuarios(@PageableDefault(page = 0, size = 5) Pageable pageable, HttpServletRequest request) {
+    public ResponseEntity<Page<UserEntity>> getUsuarios(@PageableDefault(size = 5) Pageable pageable) {
 
         Page<UserEntity> usuarios = userEntityService.findAllPageable(pageable);
 
@@ -50,34 +53,41 @@ public class UserEntityController {
 
     @GetMapping("/usuarios/{id}")
     public ResponseEntity<UserEntity> getUser(@PathVariable Long id){
-        return userEntityRepository.findById(id)
+        return userEntityService.findById(id)
                 .map(user -> ResponseEntity.ok().body(user)) //200 OK
                 .orElse(ResponseEntity.notFound().build());         // 404 NOT FOUND
     }
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity nuevoUser){
-        return userEntityRepository.findById(id)
+        return userEntityService.findById(id)
                 .map(user -> {
                     user.setUsername(nuevoUser.getUsername());
                     user.setEmail(nuevoUser.getEmail());
-                    userEntityRepository.save(user);
+                    userEntityService.save(user);
                     return ResponseEntity.ok().body(user);  //200  OK
-                }).orElseGet(() -> {
-                    return ResponseEntity.ok().body(nuevoUser);
-                });
+                }).orElseGet(() -> ResponseEntity.ok().body(nuevoUser));
 
     }
 
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
-        return userEntityRepository.findById(id)
+        return userEntityService.findById(id)
                 .map(user -> {
-                    userEntityRepository.delete(user);
+                    userEntityService.delete(user);
                     return ResponseEntity.noContent().<Void>build();  // 204 NOT CONTENT
                 })
                 .orElse(ResponseEntity.notFound().build());  // 404 NOT FOUND
+    }
+
+    public ResponseEntity<?> error(BindingResult bindingResult){
+        Map<String,String> errors = new HashMap<>();
+        bindingResult.getFieldErrors().forEach(err -> {
+            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage());
+
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }

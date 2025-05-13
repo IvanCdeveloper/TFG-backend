@@ -2,6 +2,8 @@ package com.example.tienda_reparaciones.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,14 +27,20 @@ public class UserEntity implements UserDetails {
     @Email(message = "El email no tiene un formato válido")
     @Column(unique = true, nullable = false)
     private String email;
-
+    @NotBlank
     private String username;
-
+    @NotBlank
+    @Size(min = 4)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
     private List<String> authorities = new ArrayList<>();
+
+
+//    @OneToMany(targetEntity = Repair.class, cascade = CascadeType.ALL, mappedBy = "user")
+//    private List<Repair> repairs = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,6 +78,8 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+
 
 
 }
