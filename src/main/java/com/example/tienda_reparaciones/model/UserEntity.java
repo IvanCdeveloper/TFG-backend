@@ -1,7 +1,6 @@
 package com.example.tienda_reparaciones.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -24,7 +23,6 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email(message = "El email no tiene un formato válido")
     @Column(unique = true, nullable = false)
     private String email;
     @NotBlank
@@ -33,13 +31,26 @@ public class UserEntity implements UserDetails {
     @Size(min = 4)
     private String password;
 
+    @Transient
+    private boolean isAdmin;
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
-    private List<String> authorities = new ArrayList<>();
+    private List<String> authorities;
 
 
-//    @OneToMany(targetEntity = Repair.class, cascade = CascadeType.ALL, mappedBy = "user")
-//    private List<Repair> repairs = new ArrayList<>();
+
+
+    @OneToMany(targetEntity = Repair.class, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Repair> repairs = new ArrayList<>();
 
 
     @Override

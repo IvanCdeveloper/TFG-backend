@@ -5,7 +5,7 @@ import com.example.tienda_reparaciones.model.Repair;
 import com.example.tienda_reparaciones.model.UserEntity;
 
 import com.example.tienda_reparaciones.service.RepairService;
-import com.example.tienda_reparaciones.service.UserEntityServiceImpl;
+import com.example.tienda_reparaciones.service.UserDetailsServiceImpl;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -31,13 +31,13 @@ public class RepairController {
 
     private final RepairService repairService;
     private final PaginationLinksUtils paginationLinksUtils;
-    private final UserEntityServiceImpl userEntityServiceImpl;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public RepairController(RepairService repairService, PaginationLinksUtils paginationLinksUtils, UserEntityServiceImpl userEntityServiceImpl) {
+    public RepairController(RepairService repairService, PaginationLinksUtils paginationLinksUtils, UserDetailsServiceImpl userDetailsServiceImpl) {
 
         this.repairService = repairService;
         this.paginationLinksUtils = paginationLinksUtils;
-        this.userEntityServiceImpl = userEntityServiceImpl;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
     @GetMapping("/repairs")
@@ -60,17 +60,15 @@ public class RepairController {
             return error(bindingResult);
         }
         UserEntity userEntity= (UserEntity) authentication.getPrincipal();
-        UserEntity user = userEntityServiceImpl.loadUserByUsername(userEntity.getEmail());
+        UserEntity user = userDetailsServiceImpl.loadUserByUsername(userEntity.getEmail());
         repair.setUser(user);
         return ResponseEntity.ok().body(repairService.save(repair));
     }
 
     public ResponseEntity<?> error(BindingResult bindingResult){
         Map<String,String> errors = new HashMap<>();
-        bindingResult.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage());
-
-        });
+        bindingResult.getFieldErrors().forEach(err ->
+            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 }

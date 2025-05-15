@@ -5,7 +5,7 @@ import com.example.tienda_reparaciones.model.Repair;
 import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.repository.RepairRepository;
 import com.example.tienda_reparaciones.service.RepairService;
-import com.example.tienda_reparaciones.service.UserEntityServiceImpl;
+import com.example.tienda_reparaciones.service.UserDetailsServiceImpl;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -24,21 +24,20 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
-//@PreAuthorize("hasRole('ADMIN')")
 public class AdminRepairController {
 
     private final RepairRepository repairRepository;
 
     private final RepairService repairService;
 
-    private final UserEntityServiceImpl userEntityServiceImpl;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final PaginationLinksUtils paginationLinksUtils;
 
-    public AdminRepairController(RepairRepository repairRepository, RepairService repairService, UserEntityServiceImpl userEntityServiceImpl, PaginationLinksUtils paginationLinksUtils) {
+    public AdminRepairController(RepairRepository repairRepository, RepairService repairService, UserDetailsServiceImpl userDetailsServiceImpl, PaginationLinksUtils paginationLinksUtils) {
         this.repairRepository = repairRepository;
         this.repairService = repairService;
-        this.userEntityServiceImpl = userEntityServiceImpl;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
@@ -59,7 +58,7 @@ public class AdminRepairController {
             return error(bindingResult);
         }
         UserEntity userEntity= (UserEntity) authentication.getPrincipal();
-        UserEntity user = userEntityServiceImpl.loadUserByUsername(userEntity.getEmail());
+        UserEntity user = userDetailsServiceImpl.loadUserByUsername(userEntity.getEmail());
         repair.setUser(user);
         repairService.save(repair);
 
@@ -69,10 +68,8 @@ public class AdminRepairController {
 
     public ResponseEntity<?> error(BindingResult bindingResult){
         Map<String,String> errors = new HashMap<>();
-        bindingResult.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage());
-
-        });
+        bindingResult.getFieldErrors().forEach(err ->
+            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 }

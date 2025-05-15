@@ -60,7 +60,7 @@ public class JwtTokenProvider {
         JwtParser parser = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build();
-        Claims claims = parser.parseClaimsJws(token).getBody();
+        Claims claims = parser.parseSignedClaims(token).getPayload();
         return claims.get("email").toString();
     }
 }

@@ -2,6 +2,7 @@ package com.example.tienda_reparaciones.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,19 +20,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
+
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig( JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder,
-                                                       UserDetailsService userDetailsService) throws Exception {
+                                                       UserDetailsService userDetailsService){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
@@ -50,7 +51,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
                           // ADMIN y USER pueden gestionar reservas
-                        .requestMatchers("/mesas/**", "/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers( "/usuarios/**", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 

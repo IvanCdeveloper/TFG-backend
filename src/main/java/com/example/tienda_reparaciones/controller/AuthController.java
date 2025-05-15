@@ -1,19 +1,14 @@
 package com.example.tienda_reparaciones.controller;
 
 import com.example.tienda_reparaciones.DTO.LoginRequestDTO;
-import com.example.tienda_reparaciones.DTO.LoginResponseDTO;
 import com.example.tienda_reparaciones.DTO.UserRegisterDTO;
-import com.example.tienda_reparaciones.config.JwtTokenProvider;
 import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.service.UserEntityService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,22 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 public class AuthController {
 
     private final UserEntityService userEntityService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider tokenProvider;
-    private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserEntityService userEntityService, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager) {
+
+    public AuthController(UserEntityService userEntityService) {
         this.userEntityService = userEntityService;
-        this.passwordEncoder = passwordEncoder;
-        this.tokenProvider = tokenProvider;
-        this.authenticationManager = authenticationManager;
+
     }
 
     @PostMapping("/auth/register")
@@ -45,34 +35,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             return error(bindingResult);
         }
-
-        try {
-            UserEntity user = this.userEntityService.save(
-                    UserEntity.builder()
-                            .username(userDTO.getUsername())
-                            .password(passwordEncoder.encode(userDTO.getPassword()))
-                            .email(userDTO.getEmail())
-                            .authorities(List.of("ROLE_USER", "ROLE_ADMIN"))
-                            .build());
-
-
-            //Validamos al usuario en Spring (hacemos login manualmente)
-            UsernamePasswordAuthenticationToken userPassAuthToken = new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword());
-            Authentication auth = authenticationManager.authenticate(userPassAuthToken);    //valida el usuario y devuelve un objeto Authentication con sus datos
-            //Obtenemos el Cliente del usuario logueado
-
-
-            //Generamos un token con los datos del usuario (la clase tokenProvider ha hemos creado nosotros para no poner aquí todo el código
-            String token = this.tokenProvider.generateToken(auth);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponseDTO(Map.of(
-                    "email", user.getEmail(),
-                    "username", user.getUsername()), token));
-
-        }catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        }
+        return userEntityService.register(userDTO, false);
 
 
     }
@@ -83,30 +46,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             return error(bindingResult);
         }
-        try {
-
-            //Validamos al usuario en Spring (hacemos login manualmente)
-            UsernamePasswordAuthenticationToken userPassAuthToken = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
-            Authentication auth = authenticationManager.authenticate(userPassAuthToken);    //valida el usuario y devuelve un objeto Authentication con sus datos
-            //Obtenemos el Cliente del usuario logueado
-            UserEntity user = (UserEntity) auth.getPrincipal();
-
-            //Generamos un token con los datos del usuario (la clase tokenProvider ha hemos creado nosotros para no poner aquí todo el código
-            String token = this.tokenProvider.generateToken(auth);
-
-            //Devolvemos un código 200 con el username y token JWT
-            return ResponseEntity.ok(new LoginResponseDTO(Map.of(
-                    "email", user.getEmail(),
-                    "username", user.getUsername()), token));
-        }catch (Exception e) {  //Si el usuario no es válido, salta una excepción BadCredentialsException
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    Map.of(
-                            "path", "/auth/login",
-                            "message", e.getMessage(),
-                            "timestamp", new Date()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(userEntityService.login(loginDTO));
     }
 
     @GetMapping("/auth/check-status")
@@ -138,10 +78,8 @@ public class AuthController {
 
     public ResponseEntity<?> error(BindingResult bindingResult){
         Map<String,String> errors = new HashMap<>();
-        bindingResult.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage());
-
-        });
+        bindingResult.getFieldErrors().forEach(err ->
+                errors.put(err.getField(), "El " + err.getField() + " " +err.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 

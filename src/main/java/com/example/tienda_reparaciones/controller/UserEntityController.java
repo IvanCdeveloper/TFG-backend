@@ -1,20 +1,23 @@
 package com.example.tienda_reparaciones.controller;
 
+import com.example.tienda_reparaciones.DTO.UserRegisterDTO;
 import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.service.UserEntityService;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.util.HashMap;
 import java.util.Map;
 
+//@PreAuthorize("hasRole('ADMIN')")
 @RestController
 public class UserEntityController {
 
@@ -44,12 +47,16 @@ public class UserEntityController {
     }
 
 
-//    @PostMapping("/usuarios")
-//    public ResponseEntity<UserEntity> crearUsuario(@RequestBody UserEntity user){
-//        var user = UserEntityRepository.save(user);
-//        return new ResponseEntity<>(user, HttpStatus.CREATED);     // 201 CREATED
-//        // return ResponseEntity.status(HttpStatus.CREATED).body(user);
-//    }
+    @PostMapping("/usuarios/{isAdmin}")
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody UserRegisterDTO user, BindingResult bindingResult, @PathVariable Boolean isAdmin){
+        if(bindingResult.hasErrors()){
+            return error(bindingResult);
+        }
+
+        userEntityService.register(user, isAdmin);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);     // 201 CREATED
+        // return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
 
     @GetMapping("/usuarios/{id}")
     public ResponseEntity<UserEntity> getUser(@PathVariable Long id){
@@ -58,17 +65,20 @@ public class UserEntityController {
                 .orElse(ResponseEntity.notFound().build());         // 404 NOT FOUND
     }
 
-    @PutMapping("/usuarios/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity nuevoUser){
-        return userEntityService.findById(id)
-                .map(user -> {
-                    user.setUsername(nuevoUser.getUsername());
-                    user.setEmail(nuevoUser.getEmail());
-                    userEntityService.save(user);
-                    return ResponseEntity.ok().body(user);  //200  OK
-                }).orElseGet(() -> ResponseEntity.ok().body(nuevoUser));
-
-    }
+//    @PutMapping("/usuarios/{id}")
+//    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity nuevoUser, BindingResult bindingResult){
+//        if(bindingResult.hasErrors()){
+//            return error(bindingResult);
+//        }
+//        return userEntityService.findById(id)
+//                .map(user -> {
+//                    user.setUsername(nuevoUser.getUsername());
+//                    user.setEmail(nuevoUser.getEmail());
+//                    userEntityService.save(user, false);
+//                    return ResponseEntity.ok().body(user);  //200  OK
+//                }).orElseGet(() -> ResponseEntity.ok().body(nuevoUser));
+//
+//    }
 
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -83,10 +93,8 @@ public class UserEntityController {
 
     public ResponseEntity<?> error(BindingResult bindingResult){
         Map<String,String> errors = new HashMap<>();
-        bindingResult.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage());
-
-        });
+        bindingResult.getFieldErrors().forEach(err ->
+            errors.put(err.getField(), "El campo " + err.getField() + " " +err.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 
