@@ -29,23 +29,40 @@ public class Repair {
     private Long id;
 
     @NotBlank
-    private String marca;
+    private String brand;
     @NotBlank
-    private String modelo;
+    private String model;
 
     @NotEmpty
-    @ElementCollection
-    private List<String> piezas = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "repair_part",
+            joinColumns = @JoinColumn(name = "repair_id"),
+            inverseJoinColumns = @JoinColumn(name = "part_id")
+    )
+    private List<Part> parts = new ArrayList<>();
 
-    @NotNull
-    private BigDecimal precio;
 
-    private Duration duracion;
+    private Duration duration;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @Transient
+    private BigDecimal price;
+
+
+
+    public BigDecimal getPrice() {
+        return parts.stream()
+                .reduce(
+                        BigDecimal.ZERO,
+                        (sum, part) -> sum.add(BigDecimal.valueOf(part.getPrice())),
+                        BigDecimal::add
+                );
+    }
 
 
 

@@ -1,6 +1,7 @@
 package com.example.tienda_reparaciones.controller;
 
 import com.example.tienda_reparaciones.DTO.LoginRequestDTO;
+import com.example.tienda_reparaciones.DTO.LoginResponseDTO;
 import com.example.tienda_reparaciones.DTO.UserRegisterDTO;
 import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.service.UserEntityService;
@@ -35,6 +36,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             return error(bindingResult);
         }
+
         return userEntityService.register(userDTO, false);
 
 

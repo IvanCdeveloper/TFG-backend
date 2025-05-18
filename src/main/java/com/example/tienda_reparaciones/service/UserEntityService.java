@@ -80,10 +80,10 @@ public class UserEntityService {
 
 
             user.setAdmin(isAdmin);
-            user = userEntityRepository.save(user);
+            userEntityRepository.save(user);
 
             String token = authenticateAndGetToken(dto.getEmail(), dto.getPassword());
-            Authentication auth = getAuthentication(dto.getEmail(), dto.getPassword());
+
 
 
 
