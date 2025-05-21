@@ -1,9 +1,11 @@
 package com.example.tienda_reparaciones.controller;
 
 
+import com.example.tienda_reparaciones.model.Part;
 import com.example.tienda_reparaciones.model.Repair;
 import com.example.tienda_reparaciones.model.UserEntity;
 
+import com.example.tienda_reparaciones.service.PartService;
 import com.example.tienda_reparaciones.service.RepairService;
 import com.example.tienda_reparaciones.service.UserDetailsServiceImpl;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
@@ -22,7 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -32,12 +36,14 @@ public class RepairController {
     private final RepairService repairService;
     private final PaginationLinksUtils paginationLinksUtils;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final PartService partService;
 
-    public RepairController(RepairService repairService, PaginationLinksUtils paginationLinksUtils, UserDetailsServiceImpl userDetailsServiceImpl) {
+    public RepairController(RepairService repairService, PaginationLinksUtils paginationLinksUtils, UserDetailsServiceImpl userDetailsServiceImpl, PartService partService) {
 
         this.repairService = repairService;
         this.paginationLinksUtils = paginationLinksUtils;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.partService = partService;
     }
 
     @GetMapping("/repairs")
@@ -59,10 +65,23 @@ public class RepairController {
         if (bindingResult.hasErrors()) {
             return error(bindingResult);
         }
-        UserEntity userEntity= (UserEntity) authentication.getPrincipal();
+
+        UserEntity userEntity = (UserEntity) authentication.getPrincipal();
         UserEntity user = userDetailsServiceImpl.loadUserByUsername(userEntity.getEmail());
         repair.setUser(user);
-        return ResponseEntity.ok().body(repairService.save(repair));
+
+        // Recuperar las partes completas desde sus IDs
+        List<Part> fullParts = repair.getParts().stream()
+                .map(part -> partService.findById(part.getId())) // asegúrate que existe
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        repair.setParts(fullParts);
+
+        Repair savedRepair = repairService.save(repair);
+
+        return ResponseEntity.ok(savedRepair);
     }
 
     public ResponseEntity<?> error(BindingResult bindingResult){

@@ -1,11 +1,13 @@
 package com.example.tienda_reparaciones.service;
 
 
+import com.example.tienda_reparaciones.model.Part;
 import com.example.tienda_reparaciones.repository.PartRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PartService {
@@ -18,7 +20,7 @@ public class PartService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> findAllParts(String marca, String modelo) {
+    public List<Part> findAllParts(String marca, String modelo) {
         return partRepository.findAllParts(marca, modelo);
     }
 
@@ -31,6 +33,10 @@ public class PartService {
     public List<String> findAllMarcas(){
         return partRepository.findAllBrands();
     }
+
+    public Optional<Part> findById(Long id){
+        return partRepository.findById(id);
+    };
 
 
 

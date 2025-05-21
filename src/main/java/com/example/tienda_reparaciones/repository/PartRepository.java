@@ -16,8 +16,8 @@ public interface PartRepository extends JpaRepository<Part, Long> {
     @Query(" SELECT DISTINCT(p.model) FROM Part p WHERE p.brand = ?1")
     List<String> findAllModels(String brand);
 
-    @Query(" SELECT p.name FROM Part p WHERE p.brand = ?1 AND p.model = ?2")
-    List<String> findAllParts(String brand, String model);
+    @Query(" SELECT p FROM Part p WHERE p.brand = ?1 AND p.model = ?2")
+    List<Part> findAllParts(String brand, String model);
 
 
 }

@@ -34,7 +34,7 @@ public class Repair {
     private String model;
 
     @NotEmpty
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "repair_part",
             joinColumns = @JoinColumn(name = "repair_id"),

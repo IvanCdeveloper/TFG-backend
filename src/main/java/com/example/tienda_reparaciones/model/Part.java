@@ -1,6 +1,7 @@
 package com.example.tienda_reparaciones.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Part {
 
     private double price;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "parts")
     private List<Repair> repairs = new ArrayList<>();
 

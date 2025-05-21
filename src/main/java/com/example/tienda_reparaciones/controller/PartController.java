@@ -1,6 +1,7 @@
 package com.example.tienda_reparaciones.controller;
 
 
+import com.example.tienda_reparaciones.model.Part;
 import com.example.tienda_reparaciones.service.PartService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +30,8 @@ public class PartController {
         return partService.findAllModelos(brand);
     }
 
-    @GetMapping("/parts")
-    public List<String> getParts(
+    @GetMapping()
+    public List<Part> getParts(
             @RequestParam String brand,
             @RequestParam String model
     ) {
