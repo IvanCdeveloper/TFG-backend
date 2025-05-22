@@ -23,7 +23,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminRepairController {
 
     private final RepairRepository repairRepository;

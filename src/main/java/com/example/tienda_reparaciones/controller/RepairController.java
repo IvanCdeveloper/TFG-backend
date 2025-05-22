@@ -13,13 +13,11 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -28,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
+@RequestMapping("/api")
 @RestController
 public class RepairController {
 
@@ -82,6 +80,30 @@ public class RepairController {
         Repair savedRepair = repairService.save(repair);
 
         return ResponseEntity.ok(savedRepair);
+    }
+
+    @DeleteMapping("/repairs/{id}")
+    public ResponseEntity<?> deleteRepair(@PathVariable Long id, Authentication authentication) {
+        UserEntity userEntity = (UserEntity) authentication.getPrincipal();
+        UserEntity user = userDetailsServiceImpl.loadUserByUsername(userEntity.getEmail());
+
+        Optional<Repair> repairOptional = repairService.findById(id);
+
+        if (repairOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reparación con id " + id + " no encontrada");
+        }
+
+        Repair repair = repairOptional.get();
+
+        // Asumimos que Repair tiene un getUser() que devuelve el propietario
+        if (!repair.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No tienes permiso para eliminar esta reparación");
+        }
+
+        repairService.delete(repair);
+        return ResponseEntity.ok("Reparación eliminada correctamente");
     }
 
     public ResponseEntity<?> error(BindingResult bindingResult){

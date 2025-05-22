@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api")
 @RestController
 public class UserEntityController {
 

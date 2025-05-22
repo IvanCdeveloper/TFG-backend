@@ -45,13 +45,13 @@ public class SecurityConfig {
                 .cors(cors ->cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //Indicamos que no cree una sesión porque vamos a utilizar tokens
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login","/auth/register", "/v3/api-docs/**",
+                        .requestMatchers("/api/auth/login","/api/auth/register", "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
                           // ADMIN y USER pueden gestionar reservas
-                        .requestMatchers( "/usuarios/**", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers( "/api/usuarios/**", "/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 
@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*")); // Permitir el frontend
+        config.setAllowedOriginPatterns(List.of("http://192.168.1.138", "https://ivancuarteros.com", "https://192.168.1.138","http://ivancuarteros.com")); // Permitir el frontend
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Permitir métodos HTTP
         config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Permitir headers necesarios
         config.setAllowCredentials(true); // Permitir credenciales

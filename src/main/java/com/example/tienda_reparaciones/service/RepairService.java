@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
 
 @Service
@@ -24,9 +25,23 @@ public class RepairService {
     }
 
 
+
+
     @Transactional
     public Repair save(Repair repair) {
        return repairRepository.save(repair);
+    }
+
+
+    @Transactional
+    public Repair delete(Repair repair) {
+        repairRepository.delete(repair);
+        return repair;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Repair> findById(Long id) {
+        return repairRepository.findById(id);
     }
 
     @Transactional(readOnly = true)

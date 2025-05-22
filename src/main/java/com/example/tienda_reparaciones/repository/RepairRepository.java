@@ -15,4 +15,5 @@ public interface RepairRepository extends JpaRepository<Repair, Long> {
     Page<Repair> findAllByUser(UserEntity user, Pageable pageable);
 
 
+    Long id(Long id);
 }
