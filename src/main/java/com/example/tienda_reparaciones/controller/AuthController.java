@@ -40,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return error(bindingResult);

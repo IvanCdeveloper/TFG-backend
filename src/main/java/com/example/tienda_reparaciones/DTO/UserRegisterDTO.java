@@ -21,7 +21,7 @@ public class UserRegisterDTO {
 
 
     @UniqueEmail
-    @Email(message = "El email no tiene un formato válido")
+    @Email(message = "no tiene un formato válido")
     private String email;
 
     @NotBlank

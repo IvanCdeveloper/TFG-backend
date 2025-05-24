@@ -1,5 +1,6 @@
 package com.example.tienda_reparaciones.DTO;
 
+import com.example.tienda_reparaciones.validation.ExistsEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LoginRequestDTO {
 
+    @ExistsEmail
     @NotBlank
-    @Email(message = "El email no tiene un formato válido")
+    @Email(message = "no tiene un formato válido")
     private String email;
 
     @NotBlank
