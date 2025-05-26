@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserEntityService {
@@ -87,9 +89,13 @@ public class UserEntityService {
 
 
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponseDTO(Map.of(
+            return ResponseEntity.ok(Map.of("user", Map.of(
                     "email", user.getEmail(),
-                    "username", user.getUsername()), token));
+                    "username", user.getUsername(),
+                    "roles", user.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toList())
+            ), "token", token));
         }catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
@@ -103,7 +109,9 @@ public class UserEntityService {
         Authentication auth = getAuthentication(dto.getEmail(), dto.getPassword());
         UserEntity user = (UserEntity) auth.getPrincipal();
         return new LoginResponseDTO(
-                Map.of("email", user.getEmail(), "username", user.getUsername()),
+                Map.of("email", user.getEmail(), "username", user.getUsername(), "roles", user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList())),
                 token
         );
     }

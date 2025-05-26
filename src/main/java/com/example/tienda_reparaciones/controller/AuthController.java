@@ -10,12 +10,15 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 @RequestMapping("/api")
 @RestController
 public class AuthController {
@@ -61,7 +64,10 @@ public class AuthController {
 
             return ResponseEntity.ok(Map.of("user", Map.of(
                     "email", user.getEmail(),
-                    "username", user.getUsername()
+                    "username", user.getUsername(),
+                    "roles", user.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toList())
             ), "token", token));
 
         } catch (Exception e) {

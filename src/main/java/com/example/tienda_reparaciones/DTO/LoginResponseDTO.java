@@ -12,6 +12,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class LoginResponseDTO {
-    private Map<String, String> user;
+    private Map<String, Object> user;
     private String token;
 }

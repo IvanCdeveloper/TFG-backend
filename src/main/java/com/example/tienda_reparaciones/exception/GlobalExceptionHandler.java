@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PasswordsDoNotMatchException.class)
     public ResponseEntity<?> handlePasswordsDoNotMatchException(PasswordsDoNotMatchException ex) {
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        return ResponseEntity.badRequest().body(Map.of("password2", ex.getMessage()));
     }
 
 
