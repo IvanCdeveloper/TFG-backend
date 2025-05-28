@@ -4,6 +4,7 @@ package com.example.tienda_reparaciones.service;
 
 import com.example.tienda_reparaciones.model.Repair;
 
+import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.repository.RepairRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +57,11 @@ public class RepairService {
     }
 
 
+    @Transactional()
+    public Optional<Repair> findRepairIfOwnedByUser(Long repairId, Long userId) {
+        return repairRepository.findById(repairId)
+                .filter(repair -> repair.getUser().getId().equals(userId));
+    }
 
 
 

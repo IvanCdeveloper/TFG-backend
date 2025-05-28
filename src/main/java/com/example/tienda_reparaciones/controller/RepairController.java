@@ -58,6 +58,27 @@ public class RepairController {
 
     }
 
+    @GetMapping("/repairs/{id}")
+    public ResponseEntity<?> getUserRepairs(Authentication authentication, @PathVariable Long id) {
+
+        UserEntity user= (UserEntity) authentication.getPrincipal();
+
+
+        if(repairService.findById(id).isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Repair not found");
+        }
+
+        Optional<Repair> repair = repairService.findRepairIfOwnedByUser( id, user.getId());
+
+        if(repair.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("no tienes permisos para acceder a esta reparacion");
+        }
+
+        return ResponseEntity.ok().body(repair);
+
+    }
+
     @PostMapping("/repairs")
     public ResponseEntity<?> createRepair(@Valid @RequestBody Repair repair, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
