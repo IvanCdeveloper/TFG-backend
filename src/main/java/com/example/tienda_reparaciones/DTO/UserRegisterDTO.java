@@ -9,6 +9,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO con los datos que recibimos del frontend cuando envia un formulario de registro
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

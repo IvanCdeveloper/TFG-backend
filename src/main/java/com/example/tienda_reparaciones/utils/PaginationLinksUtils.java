@@ -4,6 +4,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * Clase que añade a la respuesta las distintas opciones que tiene el usuario para
+ * pasar de pagina y las distintas acciones que tiene. Solo disponible en respuestas
+ * que utilicen paginación
+ *
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
 @Component
 public class PaginationLinksUtils {
 

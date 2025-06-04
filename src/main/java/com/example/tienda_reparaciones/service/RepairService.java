@@ -4,7 +4,6 @@ package com.example.tienda_reparaciones.service;
 
 import com.example.tienda_reparaciones.model.Repair;
 
-import com.example.tienda_reparaciones.model.UserEntity;
 import com.example.tienda_reparaciones.repository.RepairRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 
+
+/**
+ * Servicio para gestión de reparaciones de dispositivos móviles.
+ *
+ * Proporciona funcionalidades para crear, consultar, actualizar y eliminar
+ * reparaciones, así como calcular precios automáticamente basándose en
+ * los componentes seleccionados.
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 @Service
 public class RepairService {
 
@@ -35,9 +46,8 @@ public class RepairService {
 
 
     @Transactional
-    public Repair delete(Repair repair) {
+    public void delete(Repair repair) {
         repairRepository.delete(repair);
-        return repair;
     }
 
     @Transactional(readOnly = true)
@@ -49,6 +59,14 @@ public class RepairService {
     public Page<Repair> findAllPageable(Pageable pageable){
 
         return repairRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Repair> findAllPageableSorted(Pageable pageable, String filter){
+
+
+
+        return repairRepository.findAllByBrand(filter, pageable );
     }
 
     @Transactional(readOnly = true)

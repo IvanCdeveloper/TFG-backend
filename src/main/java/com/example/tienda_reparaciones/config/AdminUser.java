@@ -9,6 +9,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Clase que crea dos usuarios de prueba al iniciar la aplicación,
+ * uno con rol user y otro con rol admin
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-05-01
+ */
+
 @Component
 public class AdminUser implements CommandLineRunner{
 

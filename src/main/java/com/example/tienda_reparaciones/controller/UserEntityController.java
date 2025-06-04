@@ -17,7 +17,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-//@PreAuthorize("hasRole('ADMIN')")
+/**
+ * Controlador de usuarios para crear usuarios sin pasar por el authController.
+ * Solo puede crear usuarios mediante este controlador un administrador ya que puedes acceder
+ * a todos los usuarios y crear usuarios admin
+ *
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
+
 @RequestMapping("/api")
 @RestController
 public class UserEntityController {

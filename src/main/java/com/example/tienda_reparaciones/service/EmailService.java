@@ -5,6 +5,13 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servicio para enviar el correo desde el frontend a la dirección de correo corporativa de la empresa
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-05-01
+ */
 @Service
 public class EmailService {
 

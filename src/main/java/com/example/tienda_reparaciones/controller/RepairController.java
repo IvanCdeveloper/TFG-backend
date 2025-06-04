@@ -26,6 +26,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Controlador para crear, ver y eliminar reparaciónes si estas autenticado.
+ *
+ * Este controlador asigna la reparación al usuario que quiere crear la reparación.
+ * También valida que el usuario solo pueda acceder a reparaciones que ha creado él.
+ *
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
 @RequestMapping("/api")
 @RestController
 public class RepairController {

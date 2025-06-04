@@ -7,6 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+
+/**
+ * DTO con los datos que recibimos del cliente cuando inicia sesion
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

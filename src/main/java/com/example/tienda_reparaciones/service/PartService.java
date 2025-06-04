@@ -9,6 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio para encontrar todos las marcas, modelos y partes.
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
 @Service
 public class PartService {
 

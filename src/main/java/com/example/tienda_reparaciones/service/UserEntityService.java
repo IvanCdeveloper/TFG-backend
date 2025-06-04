@@ -27,6 +27,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+/**
+ * Servicio para registrar, loguear y eliminar usuarios, además de obtener los permisos, el token de los usuarios.
+ * Tambien para comprobar si el email escrito por el usuario ya existe en base de datos
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ *
+ */
 @Service
 public class UserEntityService {
 

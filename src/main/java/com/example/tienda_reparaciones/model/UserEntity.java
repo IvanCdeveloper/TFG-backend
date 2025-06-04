@@ -12,12 +12,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Entidad UserEntity que son los usuarios de la aplicación.
+ * Tienen un id, un email unico, una contraseña de mínimo 4 carácteres, una propiedad isAdmin, los permisos authorities,
+ * una relación uno a muchos con reparaciones y métodos que hereda de UserDetails
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Data
+@Table(name = "user_entities")
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

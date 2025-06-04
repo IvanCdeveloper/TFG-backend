@@ -8,6 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO que incrustamos en la respuesta a la solicitud de un inicio de sesión
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
