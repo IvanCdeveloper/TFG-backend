@@ -5,6 +5,15 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;
 
+/**
+ * Validador que verifica que el email introducido por el usuario exita en base de datos
+ * para que en el caso de que no exista el usuario que haga login sepa que el email introducido
+ * no existe en base de datos y que se cree una cuenta
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 
 @Component
 public class EmailExistsValidator implements ConstraintValidator<ExistsEmail, String> {

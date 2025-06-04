@@ -6,6 +6,14 @@ import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 
+/**
+ * Anotación que implementa la validación UniqueEmailValidator
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
 @Documented
 @Constraint(validatedBy = UniqueEmailValidator.class)
 @Target({ElementType.FIELD})

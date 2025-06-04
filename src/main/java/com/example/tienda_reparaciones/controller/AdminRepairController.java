@@ -9,7 +9,9 @@ import com.example.tienda_reparaciones.service.UserDetailsServiceImpl;
 import com.example.tienda_reparaciones.utils.PaginationLinksUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * Controlador que obtiene todas las reparaciones con distintos filtros y ordenación
+ * según el administrador eliga en el panel de administración. También puede crear reparaciones
+ * no vinculadas a ningun usuario ya que puede haber reparaciones en la tienda de personas que no
+ * quieran darse de alta en la página web.
+ *
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
 
 
 @RestController
@@ -46,6 +60,28 @@ public class AdminRepairController {
         Page<Repair> repairs = repairService.findAllPageable(pageable);
 
         UriComponentsBuilder uriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+
+        return ResponseEntity.ok().header("link",
+                paginationLinksUtils.createLinkHeader(repairs, uriComponentsBuilder)).body(repairs);
+
+    }
+
+    @GetMapping("/repairs/sorted")
+    public ResponseEntity<Page<Repair>> getAllRepairsSorted(@RequestParam String filter, @RequestParam(required = true) String sortField) {
+
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(sortField).ascending());
+
+
+        Page<Repair> repairs = repairService.findAllPageableSorted(pageable, filter);
+
+        UriComponentsBuilder uriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+        if(filter == null || filter.isEmpty()) {
+            repairs = repairService.findAllPageable(pageable);
+
+
+        }
+
+
 
         return ResponseEntity.ok().header("link",
                 paginationLinksUtils.createLinkHeader(repairs, uriComponentsBuilder)).body(repairs);

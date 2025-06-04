@@ -16,6 +16,10 @@ import java.io.IOException;
 
 /**
  * Extrae el token JWT de la cabecera Authoritation de la petición HTTP
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
  */
 @Component
 public class JwtFilter extends OncePerRequestFilter {

@@ -19,6 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+/**
+ * Controlador que registra usuarios, inicia sesión y comprueba si un usuario esta logueado correctamente
+ *
+ * @author Iván Cuarteros
+ * @version 1.0
+ * @since 2025-03-01
+ */
+
 @RequestMapping("/api")
 @RestController
 public class AuthController {
