@@ -15,6 +15,7 @@ import org.hibernate.annotations.Formula;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class Repair {
         return Duration.between(LocalDateTime.now(), endTime);
     }
 
-    private LocalDateTime endTime;
+    private OffsetDateTime endTime;
 
     @JsonIgnore
     @ManyToOne

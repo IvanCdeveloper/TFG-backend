@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controlador que obtiene todas las reparaciones con distintos filtros y ordenación
@@ -56,8 +58,8 @@ public class AdminRepairController {
     }
 
     @GetMapping("/repairs")
-    public ResponseEntity<Page<Repair>> getAllRepairs(@PageableDefault(size = 6) Pageable pageable) {
-        Page<Repair> repairs = repairService.findAllPageable(pageable);
+    public ResponseEntity<Page<Repair>> getAllRepairs(@PageableDefault(size = 10) Pageable pageable) {
+        Page<Repair> repairs = repairRepository.findAll(pageable);
 
         UriComponentsBuilder uriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
 
@@ -69,7 +71,7 @@ public class AdminRepairController {
     @GetMapping("/repairs/sorted")
     public ResponseEntity<Page<Repair>> getAllRepairsSorted(@RequestParam String filter, @RequestParam(required = true) String sortField) {
 
-        Pageable pageable = PageRequest.of(0, 6, Sort.by(sortField).ascending());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(sortField).ascending());
 
 
         Page<Repair> repairs = repairService.findAllPageableSorted(pageable, filter);
@@ -100,6 +102,49 @@ public class AdminRepairController {
 
 
         return ResponseEntity.ok().body(repairRepository.save(repair));
+    }
+
+    @PutMapping("/repairs/{id}")
+    public ResponseEntity<?> updateRepair(@PathVariable Long id, @Valid @RequestBody Repair repair, BindingResult bindingResult ,Authentication authentication) {
+        if(bindingResult.hasErrors()){
+            return error(bindingResult);
+        }
+        UserEntity userEntity= (UserEntity) authentication.getPrincipal();
+        UserEntity user = userDetailsServiceImpl.loadUserByUsername(userEntity.getEmail());
+        Repair repairDb = repairService.findById(id)
+                        .map(rep ->{
+                            rep.setBrand(repair.getBrand());
+                            rep.setModel(repair.getModel());
+                            rep.setPrice(repair.getPrice());
+                            rep.setParts(repair.getParts());
+                            rep.setEndTime(repair.getEndTime());
+                            return repairRepository.save(rep);
+                        }).orElseGet(() -> repairService.save(repair));
+
+
+
+
+
+        return ResponseEntity.ok().body(repairDb);
+    }
+
+    @DeleteMapping("/repairs/{id}")
+    public ResponseEntity<?> deleteRepair(@PathVariable Long id, Authentication authentication) {
+
+
+        Optional<Repair> repairOptional = repairService.findById(id);
+
+        if (repairOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reparación con id " + id + " no encontrada");
+        }
+
+        Repair repair = repairOptional.get();
+
+
+
+        repairService.delete(repair);
+        return ResponseEntity.ok("Reparación eliminada correctamente");
     }
 
     public ResponseEntity<?> error(BindingResult bindingResult){
